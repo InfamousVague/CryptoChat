@@ -4,13 +4,22 @@ document.getElementById("blockKey").innerText = key
 let theirBlockKey = ''
 
 const chatBox = document.getElementById('chat')
+
+const addMyMessage = function(msg, sub) {
+  if (sub) {
+    chatBox.innerHTML += `<p class="nopad" style="color: #95a5a6;">${msg}</p>`
+  } else {
+    chatBox.innerHTML += `<p class="nopad" style="color: #2ecc71;"><span class="timestamp">[${Date.now()}]:</span> ${msg}</p>`
+  }
+}
+
 const sendMessage = function(msg) {
   const decrypted = CryptoJS.AES.decrypt(msg, theirBlockKey.replace(/\s/g, ''))
 
   if (decrypted.toString(CryptoJS.enc.Utf8)) {
-    chatBox.innerHTML += `<p class="nopad"><span class="timestamp">[${Date.now()}]:</span> ${decrypted.toString(CryptoJS.enc.Utf8)}</p>`
+    chatBox.innerHTML += `<p class="nopad" style="color: #34495e;"><span class="timestamp">[${Date.now()}]:</span> ${decrypted.toString(CryptoJS.enc.Utf8)}</p>`
   } else {
-    chatBox.innerHTML += `<p class="nopad"><span class="timestamp">[${Date.now()}]:</span> Failed to decrypt message, need blockkey to decrypted.</p>`
+    chatBox.innerHTML += `<p class="nopad" style="color: #34495e;"><span class="timestamp">[${Date.now()}]:</span> Failed to decrypt message, need blockkey to decrypted.</p>`
   }
 
   chatBox.scrollTop = chatBox.scrollHeight;
@@ -33,8 +42,9 @@ peer.on('connection', function (conn) {
     document.getElementById('send').onclick = function() {
       const val = document.getElementById('message').value
       document.getElementById('message').value = ''
-      console.log('encrypting using', key.replace(/\s/g, ''))
+      addMyMessage(val)
       const msg = CryptoJS.AES.encrypt(val, key.replace(/\s/g, ''))
+      addMyMessage(msg.toString(), true)
       conn.send(msg.toString())
     }
   })
