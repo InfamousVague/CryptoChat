@@ -57,11 +57,11 @@ document.getElementById('connect').onclick = function() {
   const theirBlock = document.getElementById('theirBlockKey').value
 
   theirBlockKey = theirBlock
-  console.log('theirblock', theirBlock)
+
   const client = peer.connect(theirID);
 
   client.on('open', function() {
-    client.send('Hello!')
+    addMyMessage(`Connected to ${theirID}!`)
 
     client.on('data', function(data) {
       sendMessage(data)
