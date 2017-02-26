@@ -1,6 +1,8 @@
 # CryptoChat
 CryptoChat uses [PeerJS](http://peerjs.com) to establish a peer 2 peer connection over Web RTC, messages are encrypted before being sent over the p2p network using [CryptoJS](https://www.npmjs.com/package/crypto-js). Messages are decrpyted on the client machine as well using a "block key" which is basically just a secret key. 
 
+It also used [VueJS](https://vuejs.org/) and [SimpleState](http://github.com/wski/SimpleState) for spa goodness.
+
 To start you'll need someone to talk to, and you'll both need to share your peer ids (something like `8y7jsqn09eoy9zfr`) and your block keys, which look like...
 
 ```
