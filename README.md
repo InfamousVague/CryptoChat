@@ -17,4 +17,4 @@ Your messges never hit a server they are being trasmitted from one computer to a
 Demo here: http://rawgit.com/wski/CryptoChat/master/index.html
 
 
-![https://i.gyazo.com/369a8f0e92ae58eeb0eac20261aced5a.png](http://rawgit.com/wski/CryptoChat/master/index.html)
+![http://i.imgur.com/acnGfA6.png](http://rawgit.com/wski/CryptoChat/master/index.html)
