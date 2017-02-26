@@ -58,7 +58,7 @@ peer.on('open', (peerID) => {
   
   simple.connect(function(s) { app.simple = s })
 
-  
+  // Connect  
   peer.on('connection', function (conn) {
     // ID of peer connection to us
     pid = conn.peer
@@ -73,4 +73,5 @@ peer.on('open', (peerID) => {
       })
     })
   })
+  // End Connect
 })

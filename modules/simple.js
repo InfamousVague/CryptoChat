@@ -92,16 +92,19 @@ class SimpleState {
   }
 }
 
+// Init
 const simple = new SimpleState({
     content: 'To begin, you\'ll need a peer id and block key...'
 })
 
+// Events
 simple.create('addMessage', function(msg) {
   return {
     content: msg,
   }
 })
 
+// Reducers
 simple.reducers(function(action) {
   switch (action.type) {
     case 'addMessage':
