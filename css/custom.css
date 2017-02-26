@@ -1,0 +1,15 @@
+textarea, input, button {
+  width: 100%;
+}
+.cancel, .confirm {
+  width: 25rem !important;
+  padding-top: 0 !important;
+}
+.nopad {
+  margin: 0;
+}
+#chat {
+  height: 57.3rem;
+  margin-bottom: 2rem;
+  overflow-y: scroll;
+}

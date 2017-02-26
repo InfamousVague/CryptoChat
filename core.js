@@ -1,27 +1,19 @@
 const key = createKey(3)
-document.getElementById("blockKey").innerText = key 
 
-let theirBlockKey = ''
+let theirBlockKey
+let rcon
+let pid
 
 const chatBox = document.getElementById('chat')
 
-// Adds a local message
-const addMyMessage = function(msg, sub) {
-  if (sub) {
-    chatBox.innerHTML += `<p class="nopad" style="color: #95a5a6;">${msg}</p>`
-  } else {
-    chatBox.innerHTML += `<p class="nopad" style="color: #2ecc71;"><span class="timestamp">[${getTime()}]:</span> ${msg}</p>`
-  }
-}
-
 // Adds a message to the chatbox
-const sendMessage = function(msg) {
+const writeMessage = function(msg, app) {
   const decrypted = CryptoJS.AES.decrypt(msg, theirBlockKey.replace(/\s/g, ''))
 
   if (decrypted.toString(CryptoJS.enc.Utf8)) {
-    chatBox.innerHTML += `<p class="nopad" style="color: #34495e;"><span class="timestamp">[${getTime()}]:</span> ${decrypted.toString(CryptoJS.enc.Utf8)}</p>`
+    app.content += `\n${pid}: ${decrypted.toString(CryptoJS.enc.Utf8)}`
   } else {
-    chatBox.innerHTML += `<p class="nopad" style="color: #34495e;"><span class="timestamp">[${getTime()}]:</span> ${msg}</p>`
+    app.content += `\n${pid}: ${msg}`
   }
 
   // Automatically scroll to bottom of div
@@ -32,60 +24,68 @@ const sendMessage = function(msg) {
 const peer = new Peer({key: 't6ll478mrrv34n29'})
 
 // Once we've gotten a peer ID from the broker, let us know what it is so we may share it
-peer.on('open', (id) => {
-  document.getElementById("peerID").innerText = id 
-})
+peer.on('open', (peerID) => {
+  const app = new Vue({
+    el: '#app',
+    data: {
+      peerID,
+      key,
+      content: 'To begin, you\'ll need a peer id and block key...'
+    },
+    methods: {
+      connect: function () {
+        const theirID = document.getElementById('theirPeerID').value
+        const theirBlock = document.getElementById('theirBlockKey').value
 
-peer.on('connection', function (conn) {
-  // ID of peer connection to us
-  const pid = conn.peer
-  
-  conn.on('open', function() {
-    // Let us know we've made a connection
-    chatBox.innerHTML += `<p>New connection from peer: ${pid}</p>`
+        // Update the global block key used to decrypt
+        theirBlockKey = theirBlock
 
-    conn.on('data', function(data) {
-      sendMessage(data)
-    })
-    document.getElementById('send').onclick = function() {
-      // Get message and clear input
-      const val = document.getElementById('message').value
-      document.getElementById('message').value = ''
+        // Connect to a new peer
+        const client = peer.connect(theirID);
 
-      // Send message to chatbox unencrypted so we remember what we've said
-      addMyMessage(val)
+        // When the connection is open, add any messages to the chatbox
+        client.on('open', function() {
+          // Let us know we've connected successfuly
+          app.content += `\nConnected to ${theirID}!`
 
-      // Encrypt the message
-      const msg = CryptoJS.AES.encrypt(val, key.replace(/\s/g, ''))
+          client.on('data', function(data) {
+            writeMessage(data, app)
+          })
+        })
+      }, 
+      send: function () {
+        // Get message and clear input
+        const val = document.getElementById('message').value
+        document.getElementById('message').value = ''
 
-      // Add the encrypted version just for fun
-      addMyMessage(msg.toString(), true)
+        // Send message to chatbox unencrypted so we remember what we've said
+        app.content += `\nMe: ${val}`
 
-      // Send the encrypted message to the peer
-      conn.send(msg.toString())
+        // Encrypt the message
+        const msg = CryptoJS.AES.encrypt(val, key.replace(/\s/g, ''))
+
+        // Send the encrypted message to the peer
+        if (rcon) {
+          rcon.send(msg.toString())
+        } else {
+          app.content += `\nOops... You're trying to send a message before connecting to a peer.`
+        }
+      }
     }
   })
+  
+  peer.on('connection', function (conn) {
+    // ID of peer connection to us
+    pid = conn.peer
+    
+    conn.on('open', function() {
+      rcon = conn
+      // Let us know we've made a connection
+      app.content += `\nNew connection from peer: ${pid}`
+
+      conn.on('data', function(data) {
+        writeMessage(data, app)
+      })
+    })
+  })
 })
-
-
-// Chat
-document.getElementById('connect').onclick = function() {
-  const theirID = document.getElementById('theirPeerID').value
-  const theirBlock = document.getElementById('theirBlockKey').value
-
-  // Update the global block key used to decrypt
-  theirBlockKey = theirBlock
-
-  // Connect to a new peer
-  const client = peer.connect(theirID);
-
-  // When the connection is open, add any messages to the chatbox
-  client.on('open', function() {
-    // Let us know we've connected successfuly
-    addMyMessage(`Connected to ${theirID}!`)
-
-    client.on('data', function(data) {
-      sendMessage(data)
-    });
-  });
-}
