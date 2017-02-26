@@ -10,7 +10,7 @@ const addMyMessage = function(msg, sub) {
   if (sub) {
     chatBox.innerHTML += `<p class="nopad" style="color: #95a5a6;">${msg}</p>`
   } else {
-    chatBox.innerHTML += `<p class="nopad" style="color: #2ecc71;"><span class="timestamp">[${Date.now()}]:</span> ${msg}</p>`
+    chatBox.innerHTML += `<p class="nopad" style="color: #2ecc71;"><span class="timestamp">[${getTime()}]:</span> ${msg}</p>`
   }
 }
 
@@ -19,9 +19,9 @@ const sendMessage = function(msg) {
   const decrypted = CryptoJS.AES.decrypt(msg, theirBlockKey.replace(/\s/g, ''))
 
   if (decrypted.toString(CryptoJS.enc.Utf8)) {
-    chatBox.innerHTML += `<p class="nopad" style="color: #34495e;"><span class="timestamp">[${Date.now()}]:</span> ${decrypted.toString(CryptoJS.enc.Utf8)}</p>`
+    chatBox.innerHTML += `<p class="nopad" style="color: #34495e;"><span class="timestamp">[${getTime()}]:</span> ${decrypted.toString(CryptoJS.enc.Utf8)}</p>`
   } else {
-    chatBox.innerHTML += `<p class="nopad" style="color: #34495e;"><span class="timestamp">[${Date.now()}]:</span> ${msg}</p>`
+    chatBox.innerHTML += `<p class="nopad" style="color: #34495e;"><span class="timestamp">[${getTime()}]:</span> ${msg}</p>`
   }
 
   // Automatically scroll to bottom of div
@@ -42,7 +42,7 @@ peer.on('connection', function (conn) {
   
   conn.on('open', function() {
     // Let us know we've made a connection
-    chatBox.innerHTML += `<p><span class="timestamp">New connection from peer: ${pid}</p>`
+    chatBox.innerHTML += `<p>New connection from peer: ${pid}</p>`
 
     conn.on('data', function(data) {
       sendMessage(data)

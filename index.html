@@ -13,6 +13,7 @@
 
   <!--Modules-->
   <script type="text/javascript" src="modules/rnd.js"></script>
+  <script type="text/javascript" src="modules/getTime.js"></script>
   <script type="text/javascript" src="modules/createKey.js"></script>
 
   <meta name="author" content="wski">
@@ -43,7 +44,8 @@
       margin: 0;
     }
     #chat {
-      height: 56.9rem;
+      height: 54.9rem;
+      margin-bottom: 2rem;
       overflow-y: scroll;
     }
   </style>
@@ -61,7 +63,7 @@
     <div class="row" style="margin-top: 5rem">
       <div class="eight columns">
         <h3>CryptoChat</h3>
-        <div id="chat">To begin, you'll need a peer id and blcok key...</div>
+        <div id="chat">To begin, you'll need a peer id and block key...</div>
         <div class="row">
           <div class="eight columns">
             <input type="text" id="message" />
