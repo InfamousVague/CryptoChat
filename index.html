@@ -13,6 +13,12 @@
   <script type="text/javascript" src="modules/rnd.js"></script>
   <script type="text/javascript" src="modules/getTime.js"></script>
   <script type="text/javascript" src="modules/createKey.js"></script>
+  <script type="text/javascript" src="modules/writeMessage.js"></script>
+  <script type="text/javascript" src="modules/simple.js"></script>
+
+  <script type="text/javascript">
+    const key = createKey(3)
+  </script>
 
 
   <meta name="author" content="wski">
@@ -37,7 +43,7 @@
     <div class="row" style="margin-top: 5rem">
       <div class="eight columns">
         <h3>CryptoChat</h3>
-        <pre id="chat">{{ content }}</pre>
+        <pre id="chat">{{ simple.state.content }}</pre>
         <div class="row">
           <div class="eight columns">
             <input type="text" id="message" />

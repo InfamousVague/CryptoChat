@@ -1,24 +1,6 @@
-const key = createKey(3)
-
 let theirBlockKey
 let rcon
 let pid
-
-const chatBox = document.getElementById('chat')
-
-// Adds a message to the chatbox
-const writeMessage = function(msg, app) {
-  const decrypted = CryptoJS.AES.decrypt(msg, theirBlockKey.replace(/\s/g, ''))
-
-  if (decrypted.toString(CryptoJS.enc.Utf8)) {
-    app.content += `\n${pid}: ${decrypted.toString(CryptoJS.enc.Utf8)}`
-  } else {
-    app.content += `\n${pid}: ${msg}`
-  }
-
-  // Automatically scroll to bottom of div
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
 
 // P2P
 const peer = new Peer({key: 't6ll478mrrv34n29'})
@@ -30,7 +12,7 @@ peer.on('open', (peerID) => {
     data: {
       peerID,
       key,
-      content: 'To begin, you\'ll need a peer id and block key...'
+      simple
     },
     methods: {
       connect: function () {
@@ -46,10 +28,10 @@ peer.on('open', (peerID) => {
         // When the connection is open, add any messages to the chatbox
         client.on('open', function() {
           // Let us know we've connected successfuly
-          app.content += `\nConnected to ${theirID}!`
+          simple.addMessage(`Connected to ${theirID}!`)
 
           client.on('data', function(data) {
-            writeMessage(data, app)
+            writeMessage(data, simple)
           })
         })
       }, 
@@ -59,7 +41,7 @@ peer.on('open', (peerID) => {
         document.getElementById('message').value = ''
 
         // Send message to chatbox unencrypted so we remember what we've said
-        app.content += `\nMe: ${val}`
+        simple.addMessage(`Me: ${val}`)
 
         // Encrypt the message
         const msg = CryptoJS.AES.encrypt(val, key.replace(/\s/g, ''))
@@ -68,11 +50,14 @@ peer.on('open', (peerID) => {
         if (rcon) {
           rcon.send(msg.toString())
         } else {
-          app.content += `\nOops... You're trying to send a message before connecting to a peer.`
+          simple.addMessage(`Oops... You're trying to send a message before connecting to a peer.`)
         }
       }
     }
   })
+  
+  simple.connect(function(s) { app.simple = s })
+
   
   peer.on('connection', function (conn) {
     // ID of peer connection to us
@@ -81,10 +66,10 @@ peer.on('open', (peerID) => {
     conn.on('open', function() {
       rcon = conn
       // Let us know we've made a connection
-      app.content += `\nNew connection from peer: ${pid}`
+      simple.addMessage(`New connection from peer: ${pid}`)
 
       conn.on('data', function(data) {
-        writeMessage(data, app)
+        writeMessage(data, simple)
       })
     })
   })
